@@ -36,8 +36,6 @@ bool Scanner::number(const string &s)
 			return false;
 		}
 	}
-	
-
 	return true;
 	*/
 
@@ -47,6 +45,7 @@ bool Scanner::number(const string &s)
 
 bool Scanner::label(const string& s)
 {
+	/*
 	//locale loc;
 	for (unsigned i = 0; i < s.length(); i++){
 		if (!isalpha((unsigned char)s[i])) return false;
@@ -57,6 +56,10 @@ bool Scanner::label(const string& s)
 	return true;
 	//It returns false upon "?, on my machine with US locale
 	// still not portable.. let's use c's isalpha instead
+	*/
+
+	regex e("[a-zA-Z]+");
+	return regex_match(s, e);
 }
 
 bool Scanner::and(const string &s)
