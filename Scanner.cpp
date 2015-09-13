@@ -71,7 +71,7 @@ Token::TokenType Scanner::Scan(const string& s){
 	if (label(s)) return Token::LABEL;
 	if (and(s)) return Token::AND;
 	if (separator(s)) return Token::SEPARATOR;
-	return Token::UNKOWN;
+	return Token::UNKNOWN;
 }
 
 vector<Token> Scanner::Tokenize(const string& Longline){

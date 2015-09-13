@@ -2,13 +2,13 @@
 #include "Token.h"
 
 Token::Token (){
-	type = UNKOWN;
+	type = UNKNOWN;
 	value = "";
 }
 
 string Token::getTokenName(TokenType t){
 	switch (t){
-	case UNKOWN:
+	case UNKNOWN:
 		return "UNKNOWN";
 	case 	NUMBER:
 		return "NUMBER";

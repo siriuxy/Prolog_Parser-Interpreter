@@ -3,7 +3,7 @@
 using namespace std;
 struct Token{
 	enum TokenType{
-		UNKOWN,
+		UNKNOWN,
 		NUMBER,
 		LABEL,
 		LEFTPAREN,
