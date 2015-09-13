@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Scanner.h"
 #include <cctype>
+#include <regex>
 
 #include <iostream>
 
@@ -26,6 +27,7 @@ bool Scanner::rightparen(const string &s)
 
 bool Scanner::number(const string &s)
 {
+	/*
 	if (s.length() == 0) return false;
 	if (s.compare("0") == 0) return true;
 	if (s.substr(0, 1).compare("0") == 0) return false;
@@ -34,7 +36,13 @@ bool Scanner::number(const string &s)
 			return false;
 		}
 	}
+	
+
 	return true;
+	*/
+
+	regex e("0|([1-9][0-9]*)");
+	return regex_match(s, e);
 }
 
 bool Scanner::label(const string& s)
