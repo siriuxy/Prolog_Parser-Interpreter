@@ -74,6 +74,7 @@ Token::TokenType Scanner::Scan(const string& s){
 	return Token::UNKNOWN;
 }
 
+/* no need for implementing a tokenizer func because of using the extraction operator(>>) of istream
 vector<Token> Scanner::Tokenize(const string& Longline){
 	vector <Token> ret;
 	istringstream iss(Longline);
@@ -90,6 +91,7 @@ vector<Token> Scanner::Tokenize(const string& Longline){
 	ret.push_back(t);
 	return ret;
 }
+*/
 
 Scanner::Scanner(ifstream& in) :infile(in){}
 
