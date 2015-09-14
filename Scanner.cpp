@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Scanner.h"
 #include <cctype>
-#include <regex>
 
 #include <iostream>
 
@@ -27,7 +26,6 @@ bool Scanner::rightparen(const string &s)
 
 bool Scanner::number(const string &s)
 {
-	/*
 	if (s.length() == 0) return false;
 	if (s.compare("0") == 0) return true;
 	if (s.substr(0, 1).compare("0") == 0) return false;
@@ -37,15 +35,10 @@ bool Scanner::number(const string &s)
 		}
 	}
 	return true;
-	*/
-
-	regex e("0|([1-9][0-9]*)");
-	return regex_match(s, e);
 }
 
 bool Scanner::label(const string& s)
 {
-	/*
 	//locale loc;
 	for (unsigned i = 0; i < s.length(); i++){
 		if (!isalpha((unsigned char)s[i])) return false;
@@ -54,12 +47,8 @@ bool Scanner::label(const string& s)
 		// and expect for implicit conversion.
 	}
 	return true;
-	//It returns false upon "?, on my machine with US locale
+	//It returns false upon "è", on my machine with US locale
 	// still not portable.. let's use c's isalpha instead
-	*/
-
-	regex e("[a-zA-Z]+");
-	return regex_match(s, e);
 }
 
 bool Scanner::and(const string &s)
@@ -85,7 +74,6 @@ Token::TokenType Scanner::Scan(const string& s){
 	return Token::UNKNOWN;
 }
 
-/* no need for implementing a tokenizer func because of using the extraction operator(>>) of istream
 vector<Token> Scanner::Tokenize(const string& Longline){
 	vector <Token> ret;
 	istringstream iss(Longline);
@@ -102,7 +90,6 @@ vector<Token> Scanner::Tokenize(const string& Longline){
 	ret.push_back(t);
 	return ret;
 }
-*/
 
 Scanner::Scanner(ifstream& in) :infile(in){}
 

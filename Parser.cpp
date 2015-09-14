@@ -18,20 +18,25 @@ void Parser::Parse(){
 			currentParse.clear();
 			recovery.clear();
 			errorStart = it;
+			// this for-loop credits to Christ Ogle
+			if ((*it).type != Token::LABEL){
+				auto currentIt = it;
+				it++;
+				error(Token::getTokenName(Token::LABEL)
+					, ((currentIt == tokens.end()) ? Token::END : (*currentIt).type)
+					, "hornclause->head[SEPARATOR body]");
+			}
 			hornclause();
 			ofile << currentParse << endl;
 		}
 		catch (exception& e){
+			currentParse = recovery;
 			//system("color 1");
-			cout << "ERROR! At: \"";
+			cout <<endl<<"ERROR!"<<" At: \"";
 			for (auto i = errorStart; i == it; i++){
 				cout << (*i).value <<" ";
 			}
 			cout << "\" "<< e.what() << endl;
-			it++;
-			//ofile << recovery << endl;
-			//cout << "currentParse: " << currentParse << endl;
-			//cout << "recovery content :"<<recovery << endl;
 		}
 	}
 }
@@ -45,47 +50,33 @@ void Parser::match(Token::TokenType t, string currentProduction) {
 	}
 	else {
 		//recovery = currentParse;
-		throw runtime_error(" : Failed to match expected: " + Token::getTokenName(t)
-			+ " with " + "actual: " + Token::getTokenName((*it).type) + "(" + (*it).value + ")" + " for production: " + currentProduction);
+		throw runtime_error(": Attempted production " + currentProduction 
+			+ " , but failed to match expected: " + Token::getTokenName(t)
+			+ " with " + "actual: " + Token::getTokenName((*it).type) + "(" + (*it).value + ")" 
+			);
 	}
 }
-/*
-void Parser::error(string production){
-	// move pointer to the end?
-	currentParse.clear();
-	throw runtime_error(" in " + production);
-}
-*/
+
 
 void Parser::error(string expected, Token::TokenType received, string production){
-	//recovery = currentParse;
 	currentParse.clear();
-	throw runtime_error(": expect " + expected +" but received " +Token::getTokenName(received) );
+	throw runtime_error(": expect " +expected +" but received " +Token::getTokenName(received) );
 }
 
 void Parser::hornclause(){
 	if (it != tokens.end() && (*it).type == Token::LABEL){
 		head();
-		recovery = currentParse; // because the following is optional
-		
-		// local try catch, because 2nd part is optional
-		// optionally, return bool for each func as chained-stack
-		// but ignore the return value for optional part
-		try {
+		recovery = currentParse;
 			if (it != tokens.end() && (*it).type == Token::SEPARATOR) {
-				match(Token::SEPARATOR, "hornclause -> head [SEPARATOR body]");
+				match(Token::SEPARATOR, "hornclause->head[SEPARATOR body]");
 				body();
 			}
-		}
-		catch (exception& e){
-			cout << e.what();
-			currentParse = recovery;
-		}
-
 	}
-	else error(Token::getTokenName(Token::LABEL)
-		, ((it != tokens.end()) ? Token::END : (*it).type)
-		, "hornclause->head[SEPARATOR body]");
+	else {
+		error(Token::getTokenName(Token::LABEL)
+			, ((it == tokens.end()) ? Token::END : (*it).type)
+			, "hornclause->head[SEPARATOR body]");
+	}
 }
 
 void Parser::head(){
@@ -93,7 +84,7 @@ void Parser::head(){
 		predicate();
 	}
 	else error(Token::getTokenName(Token::LABEL)
-		, ((it != tokens.end()) ? Token::END : (*it).type)
+		, ((it == tokens.end()) ? Token::END : (*it).type)
 		, "head -> predicate");
 }
 
@@ -102,40 +93,30 @@ void Parser::body(){
 		predicate();
 		string LocalRecovery;
 		while (it != tokens.end() && (*it).type == Token::AND){
-			try {
 				LocalRecovery = currentParse;
 				match(Token::AND, "body->predicate{ AND predicate }");
 				predicate();
-			}
-			catch (exception& e){
-				cout << e.what();
-				currentParse = LocalRecovery;
-			}
 		}
 	}
 	else error(Token::getTokenName(Token::LABEL)
-		, ((it != tokens.end()) ? Token::END : (*it).type)
+		, ((it == tokens.end()) ? Token::END : (*it).type)
 		, "body->predicate{ AND predicate }");
 }
 
 void Parser::predicate(){
-	//add case or if condition later
 	if (it != tokens.end() && (*it).type == Token::LABEL){
 		name();
-		match(Token::LEFTPAREN, "predicate -> name LEFTPAREN [args] RIGHTPAREN");
-		// this is not an END OPTIONAL
-		// So if it has some problem, so does the production.
-		if ((*it).type == Token::LABEL || (*it).type == Token::NUMBER){
-			args();
-		}// note: for {}, use while-loop. [] is optional and may appear only once.
-		match(Token::RIGHTPAREN, "predicate->name LEFTPAREN [args] RIGHTPAREN");
+			match(Token::LEFTPAREN, "predicate -> name LEFTPAREN [args] RIGHTPAREN");
+			if ((*it).type == Token::LABEL || (*it).type == Token::NUMBER){
+				args();
+			}
+			match(Token::RIGHTPAREN, "predicate->name LEFTPAREN[args] RIGHTPAREN");
 	}
 	else error(Token::getTokenName(Token::LABEL)
-		, ((it != tokens.end()) ? Token::END : (*it).type)
+		, ((it == tokens.end()) ? Token::END : (*it).type)
 		, "predicate -> name LEFTPAREN [args] RIGHTPAREN");
 }
 
-// review FOLLOW set idea for args()
 
 void Parser::name(){
 		match(Token::LABEL, "name -> LABEL");
@@ -147,29 +128,22 @@ void Parser::args(){
 		string LocalRecovery;
 		while ((*it).type == Token::COMMA){
 			LocalRecovery = currentParse;
-			try {
 				match(Token::COMMA, "args -> symbol {COMMA symbol}");
 				symbol();
-			}
-			catch (exception& e){
-				cout << e.what();
-				currentParse = LocalRecovery;
-			}
 		}
 	}
 	else error(Token::getTokenName(Token::LABEL) + " or " + Token::getTokenName(Token::NUMBER)
-		, ((it != tokens.end()) ? Token::END : (*it).type)
+		, ((it == tokens.end()) ? Token::END : (*it).type)
 		, "args -> symbol {COMMA symbol}");
 }
 
 void Parser::symbol(){
-	// add case or if condition later
 	if (it != tokens.end() && (*it).type == Token::LABEL)
-		match(Token::LABEL, "symbol -> LABEL | NUMBER");
+			match(Token::LABEL, "symbol->LABEL | NUMBER");
 	else if (it != tokens.end() && (*it).type == Token::NUMBER)
-		match(Token::NUMBER, "symbol -> LABEL | NUMBER");
-	else 
-		error(Token::getTokenName(Token::LABEL) + " or " + Token::getTokenName(Token::NUMBER)
-			, ((it != tokens.end()) ? Token::END : (*it).type)
-			, "symbol -> LABEL | NUMBER");
+			match(Token::NUMBER, "symbol->LABEL | NUMBER");
+		else error(Token::getTokenName(Token::LABEL) + " or " 
+			+ Token::getTokenName(Token::NUMBER)
+			, ((it == tokens.end()) ? Token::END : (*it).type)
+			, "symbol->LABEL | NUMBER");
 }

@@ -1,0 +1,4 @@
+head ( )
+headWithExtra ( ) a
+headAndBody ( ) :- body ( )
+headAndMultiBody ( ) :- neck ( ) leg ( )
