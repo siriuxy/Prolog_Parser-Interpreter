@@ -27,13 +27,13 @@ void Parser::Parse(){
 					, "hornclause->head[SEPARATOR body]");
 			}
 			hornclause();
-			ofile << currentParse << endl;
+			ofile << currentParse <<" "<< endl;
 		}
 		catch (exception& e){
-			currentParse = recovery;
+			if (!recovery.empty()) ofile << recovery << " "<< endl;
 			//system("color 1");
 			cout <<endl<<"ERROR!"<<" At: \"";
-			for (auto i = errorStart; i == it; i++){
+			for (auto i = errorStart; i != it+1; i++){
 				cout << (*i).value <<" ";
 			}
 			cout << "\" "<< e.what() << endl;
@@ -45,15 +45,14 @@ void Parser::Parse(){
 void Parser::match(Token::TokenType t, string currentProduction) {
 	if (it == tokens.end()) throw runtime_error("Reaches End");
 	if ((*it).type == t) {
-		currentParse += (*it).value;
+		currentParse += ((*it).value + " ");
 		it++;
 	}
 	else {
 		//recovery = currentParse;
 		throw runtime_error(": Attempted production " + currentProduction 
-			+ " , but failed to match expected: " + Token::getTokenName(t)
-			+ " with " + "actual: " + Token::getTokenName((*it).type) + "(" + (*it).value + ")" 
-			);
+			+ " , but failed to match " + Token::getTokenName((*it).type) + "(" + (*it).value + ")"
+			+ " with " + "expected " + Token::getTokenName(t) 			);
 	}
 }
 
@@ -65,7 +64,13 @@ void Parser::error(string expected, Token::TokenType received, string production
 
 void Parser::hornclause(){
 	if (it != tokens.end() && (*it).type == Token::LABEL){
+		// for extra credit:
 		head();
+		// rational: 
+		// hornclause -> body [SEPARATOR body]
+		// body -> predicate {AND predicate}
+		// whenever first body throws, this horn clause will only have one body
+		// body();
 		recovery = currentParse;
 			if (it != tokens.end() && (*it).type == Token::SEPARATOR) {
 				match(Token::SEPARATOR, "hornclause->head[SEPARATOR body]");
@@ -80,12 +85,28 @@ void Parser::hornclause(){
 }
 
 void Parser::head(){
+	
+	// extra credit:
+	// difference from body(): it modifies (global) recovery!
+	if (it != tokens.end() && (*it).type == Token::LABEL){
+		predicate();
+		while (it != tokens.end() && (*it).type == Token::AND){
+			recovery = currentParse;
+			match(Token::AND, "body->predicate{ AND predicate }");
+			predicate();
+		}
+	}
+	else error(Token::getTokenName(Token::LABEL)
+		, ((it == tokens.end()) ? Token::END : (*it).type)
+		, "body->predicate{ AND predicate }");
+	/*
 	if (it != tokens.end() && (*it).type == Token::LABEL){
 		predicate();
 	}
 	else error(Token::getTokenName(Token::LABEL)
 		, ((it == tokens.end()) ? Token::END : (*it).type)
 		, "head -> predicate");
+		*/
 }
 
 void Parser::body(){
