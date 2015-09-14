@@ -24,13 +24,14 @@ void Parser::Parse(){
 		catch (exception& e){
 			//system("color 1");
 			cout << "ERROR! At: \"";
-			for (auto i = errorStart; i != it; i++){
+			for (auto i = errorStart; i == it; i++){
 				cout << (*i).value <<" ";
 			}
 			cout << "\" "<< e.what() << endl;
+			it++;
 			//ofile << recovery << endl;
-				//cout << "currentParse: " << currentParse << endl;
-		//	cout << "recovery content :"<<recovery << endl;
+			//cout << "currentParse: " << currentParse << endl;
+			//cout << "recovery content :"<<recovery << endl;
 		}
 	}
 }
@@ -59,7 +60,7 @@ void Parser::error(string production){
 void Parser::error(string expected, Token::TokenType received, string production){
 	//recovery = currentParse;
 	currentParse.clear();
-	throw runtime_error(": expect" +expected +" but received " +Token::getTokenName(received) );
+	throw runtime_error(": expect " + expected +" but received " +Token::getTokenName(received) );
 }
 
 void Parser::hornclause(){
@@ -72,7 +73,7 @@ void Parser::hornclause(){
 		// but ignore the return value for optional part
 		try {
 			if (it != tokens.end() && (*it).type == Token::SEPARATOR) {
-				match(Token::SEPARATOR, "hornclause->head[SEPARATOR body]");
+				match(Token::SEPARATOR, "hornclause -> head [SEPARATOR body]");
 				body();
 			}
 		}
@@ -121,13 +122,13 @@ void Parser::predicate(){
 	//add case or if condition later
 	if (it != tokens.end() && (*it).type == Token::LABEL){
 		name();
-			match(Token::LEFTPAREN, "predicate -> name LEFTPAREN [args] RIGHTPAREN");
-			// this is not an END OPTIONAL
-			// So if it has some problem, so does the production.
-			if ((*it).type == Token::LABEL || (*it).type == Token::NUMBER){
-				args();
-			}// note: for {}, use while-loop. [] is optional and may appear only once.
-			match(Token::RIGHTPAREN, "predicate->name LEFTPAREN[args] RIGHTPAREN");
+		match(Token::LEFTPAREN, "predicate -> name LEFTPAREN [args] RIGHTPAREN");
+		// this is not an END OPTIONAL
+		// So if it has some problem, so does the production.
+		if ((*it).type == Token::LABEL || (*it).type == Token::NUMBER){
+			args();
+		}// note: for {}, use while-loop. [] is optional and may appear only once.
+		match(Token::RIGHTPAREN, "predicate->name LEFTPAREN [args] RIGHTPAREN");
 	}
 	else error(Token::getTokenName(Token::LABEL)
 		, ((it != tokens.end()) ? Token::END : (*it).type)
@@ -164,10 +165,11 @@ void Parser::args(){
 void Parser::symbol(){
 	// add case or if condition later
 	if (it != tokens.end() && (*it).type == Token::LABEL)
-			match(Token::LABEL, "symbol->LABEL | NUMBER");
+		match(Token::LABEL, "symbol -> LABEL | NUMBER");
 	else if (it != tokens.end() && (*it).type == Token::NUMBER)
-			match(Token::NUMBER, "symbol->LABEL | NUMBER");
-		else error(Token::getTokenName(Token::LABEL) + " or " + Token::getTokenName(Token::NUMBER)
+		match(Token::NUMBER, "symbol -> LABEL | NUMBER");
+	else 
+		error(Token::getTokenName(Token::LABEL) + " or " + Token::getTokenName(Token::NUMBER)
 			, ((it != tokens.end()) ? Token::END : (*it).type)
-			, "symbol->LABEL | NUMBER");
+			, "symbol -> LABEL | NUMBER");
 }
