@@ -21,7 +21,8 @@ void Parser::Parse(){
 			// this for-loop credits to Christ Ogle
 			if ((*it).type != Token::LABEL){
 				auto currentIt = it;
-				it++;
+				if (it != tokens.end())
+					it++;
 				error(Token::getTokenName(Token::LABEL)
 					, ((currentIt == tokens.end()) ? Token::END : (*currentIt).type)
 					, "hornclause->head[SEPARATOR body]");
@@ -33,7 +34,12 @@ void Parser::Parse(){
 			if (!recovery.empty()) ofile << recovery << " "<< endl;
 			//system("color 1");
 			cout <<endl<<"ERROR!"<<" At: \"";
-			for (auto i = errorStart; i != it+1; i++){
+
+			// print as much information as possible, without go out of range in token vector
+			auto endOfError = (it == tokens.end()) ? tokens.end() : it + 1;
+			// increment iterator = end() is UNDEFINED! 
+			for (auto i = errorStart; i != endOfError; i++){
+				/// cout << "current t mem loc: " << &(*i) << endl;
 				cout << (*i).value <<" ";
 			}
 			cout << "\" "<< e.what() << endl;
@@ -57,9 +63,11 @@ void Parser::match(Token::TokenType t, string currentProduction) {
 }
 
 
-void Parser::error(string expected, Token::TokenType received, string production){
+void Parser::error(string expected, Token::TokenType received, string currentProduction){
 	currentParse.clear();
-	throw runtime_error(": expect " +expected +" but received " +Token::getTokenName(received) );
+	throw runtime_error(": In production " + currentProduction 
+		+ " but failed to match  " + Token::getTokenName(received) 
+		+ "  with expected: " + expected	);
 }
 
 void Parser::hornclause(){
