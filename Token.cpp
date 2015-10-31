@@ -1,9 +1,24 @@
+/*
+Token.cpp: This is the definition file for Token class. It defines constructors
+and struct functions to use in this class.
+http://www.cse.wustl.edu/~cdgill/courses/cse425/lab2
+
+Likai Yan
+Jianfeng Zeng
+*/
 #include "stdafx.h"
 #include "Token.h"
+
 
 Token::Token (){
 	type = UNKNOWN;
 	value = "";
+}
+
+Token::Token(TokenType tType, const string & s)
+{
+	type = tType;
+	value = s;
 }
 
 string Token::getTokenName(TokenType t){

@@ -1,0 +1,36 @@
+( ( greater x y y x )  
+( ( greater z 2 w 4 ) 
+( greater 5 x x ) ) )
+( ( greater w y 4 ) ) 
+( ( greater x z ) ) 
+( ( greater y y ) ) 
+( ( greater 3 x ) ) 
+( ( ancestor x y ) ( 
+( parent x z ) 
+( ancestor z y ) 
+) ) ( ( greater x y 3 x ) ( ( greater z w 3 y ) ) )
+( ( sol HAN ) ) 
+( ( sol HAN ) ( ( solo mio ) ) ) ( ( greater ) )
+( ( frinds Alice BOB ) ) 
+( ( notriends bob CharLIE ) ) 
+( ( nogodsyntax x y ) ) 
+( ( nogodsyntax x z ) ) 
+( ( nogodsyntax z y ) ) 
+( ( desendent 21 1 ) ( ( parent 3 
+21 ) ( descendent 3 1 ) ) ) 
+( ( sol 8115 ) ) 
+( ( sol 8115 ) ( ( solo 1590 ) ) ) 
+( ( frinds 17 90 ) ) 
+( ( notriends 17 21 ) ) 
+( ( extaA x y ) ) 
+( ( extaB z ) ( ( extraC 
+z x ) ( etraD 
+y ) ( extaE x ) ) ) 
+( ( extra x y ) ) 
+( ( extra z ) )
+( ( 3 z ) )
+( ( ( greater z 3 y ) ) )
+( ( greater x y 3 x ) ( ( greater z w 5 y ) ) )
+( ( greater x y ) ( ( greater x z ) ( greater z y ) ) ) ( ( greater a b c ) ) ( ( worse 
+m b a ) ) ( ( MODERN  war fare ) ) ( )
+( ( greater z 3 ) ) ( ( greater z 3 ) ) ( ( greater z 4 ) )?
